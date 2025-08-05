@@ -178,7 +178,11 @@ function createEmptyView() {
      */
     const movieCardsSection = document.getElementById("movieCards");
 
-    const message = document
+    const message = document.createElement("p");
+    message.classList.add("noresult");
+    message.textContent = "No Movie found!!! Please search for another title.";
+
+    movieCardsSection.appendChild(message);
 
 }
 
@@ -201,5 +205,8 @@ function createMovieCard(movie) {
      * TASK : 3
      * Create Movie Card and append it "movieCards" section.
      */
+    function createMovieCard(movie) {
+        console.log("createMovieCard");
+        console.log(movie);
 
 }
