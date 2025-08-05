@@ -208,5 +208,38 @@ function createMovieCard(movie) {
     function createMovieCard(movie) {
         console.log("createMovieCard");
         console.log(movie);
+        const movieCardsSection = document.getElementById("movieCards");
 
+        const card = document.createElement("article");
+        card.classList.add("card");
+
+        const title= document.createElement("p");
+        title.classList.add(cardTitle);
+        title.textContent = movie.Title;
+
+        const posterDiv = document.createElement("div");
+        posterDiv.classList.add("cardPosterDiv");
+
+        const posterImg = document.createElement("img");
+        posterImg.classList.add("moviePoster");
+        posterImg.src = movie.Poster;
+        posterImg.alt = "Movie Poster"
+
+        posterDiv.appendChild(posterImg);
+        card.appendChild(title);
+        card.appendChild(posterDiv);
+
+        movieCardsSection.appendChild(card);
+
+}
+
+function createEmptyView() {
+    const movieCardsSection= document.getElementById("movieCards");
+    movieCardsSection.innerHTML = ''; 
+
+    const noresult = document.createElement("div")
+    noresult.classList.add("noresult");
+    noresult.textContent = "No movies found. Please try another title."
+
+    movieCardsSection.appendChild(noresult);
 }
