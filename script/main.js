@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', addEventHandlers);    // calling a
 function searchHandler() {
     const inputTxt = document.getElementById("searchBar").value;
     console.log(`Text Entered: ${inputTxt}`);
-    if(inputTxt != "") {
+    if (inputTxt != "") {
         clearPreviousResult();
         getMovies(inputTxt);
     }
@@ -38,7 +38,7 @@ function addEventHandlers() {
 
     // handling enter key press on search bar
     document.getElementById("searchBar").addEventListener("keydown", (event) => {
-        if(event.key === 'Enter') {
+        if (event.key === 'Enter') {
             searchHandler();
         }
     });
@@ -50,7 +50,7 @@ function addEventHandlers() {
 function clearPreviousResult() {
     const nodes = document.getElementById("movieCards").childNodes;
     console.log(`clearPreviousResult: ${nodes.length}`);
-    for(var i = nodes.length; i>=0; i--) {
+    for (var i = nodes.length; i >= 0; i--) {
         console.log("deleting node")
         nodes[i]?.remove();
     }
@@ -89,14 +89,14 @@ async function getMovies(movieTitle) {
     try {
         const response = await fetch(API_URL);
 
-        if(response.ok) {
-            
+        if (response.ok) {
+
             // Success response is received. Extracting movieList from response.
             const data = await response.json();
 
             const movieList = data.Search;
 
-            if(movieList == null || movieList.length == 0) {
+            if (movieList == null || movieList.length == 0) {
                 createEmptyView();
                 return;
             }
@@ -109,9 +109,9 @@ async function getMovies(movieTitle) {
 
             const filteredMovies = [];
             results.forEach(result => {
-                if(result.status === "fulfilled" && result.value != null) {
+                if (result.status === "fulfilled" && result.value != null) {
                     const movieObj = result.value;
-                    movieObj.Title = movieObj.Title.length > 40 ? `${movieObj.Title.substring(0,40)}...` : movieObj.Title;
+                    movieObj.Title = movieObj.Title.length > 40 ? `${movieObj.Title.substring(0, 40)}...` : movieObj.Title;
                     filteredMovies.push(movieObj);
                 }
             })
@@ -127,14 +127,15 @@ async function getMovies(movieTitle) {
              */
             if (filteredMovies.length === 0) {
                 createEmptyView();
-            } else { 
-                filteredMovies.forEach(movie => {
-                    createMovieCard(movie);
-                })
+            } else {
+                // Loop through filteredMovies array and create movie cards
+                for (let i = 0; i < filteredMovies.length; i++) {
+                    createMovieCard(filteredMovies[i]);
+                }
             }
 
         }
-    } catch(exception) {
+    } catch (exception) {
         console.error("Exception occurred in getMovies function.")
         console.error(exception);
 
@@ -150,14 +151,14 @@ async function getMovies(movieTitle) {
 async function checkPosterURL(movie) {
     try {
         const response = await fetch(movie.Poster)
-        if(response.ok) {
+        if (response.ok) {
             // Poster url is working
             return movie;
         } else {
             // Poster url is not correct
             return null;
         }
-    } catch(error) {
+    } catch (error) {
         console.error("Error while checking poster url");
         console.error(error);
     }
@@ -176,14 +177,9 @@ function createEmptyView() {
      * TASK : 2
      * Create empty view and append it to "movieCards" section.
      */
+    const noResultParagraph = createHtmlElement('p', ['noresult'], 'No movie found!!! Please search for another title.');
     const movieCardsSection = document.getElementById("movieCards");
-
-    const message = document.createElement("p");
-    message.classList.add("noresult");
-    message.textContent = "No Movie found!!! Please search for another title.";
-
-    movieCardsSection.appendChild(message);
-
+    movieCardsSection.appendChild(noResultParagraph);
 }
 
 /**
@@ -200,46 +196,31 @@ function createEmptyView() {
 function createMovieCard(movie) {
     console.log("createMovieCard");
     console.log(movie);
-    
+
     /**
      * TASK : 3
      * Create Movie Card and append it "movieCards" section.
      */
-    function createMovieCard(movie) {
-        console.log("createMovieCard");
-        console.log(movie);
-        const movieCardsSection = document.getElementById("movieCards");
+    // Create the main article element with class "card"
+    const cardArticle = createHtmlElement('article', ['card']);
 
-        const card = document.createElement("article");
-        card.classList.add("card");
+    // Create the title paragraph with class "cardTitle"
+    const titleParagraph = createHtmlElement('p', ['cardTitle'], movie.Title);
 
-        const title= document.createElement("p");
-        title.classList.add(cardTitle);
-        title.textContent = movie.Title;
+    // Create the poster container div with class "cardPosterDiv"
+    const posterDiv = createHtmlElement('div', ['cardPosterDiv']);
 
-        const posterDiv = document.createElement("div");
-        posterDiv.classList.add("cardPosterDiv");
+    // Create the movie poster image with class "moviePoster"
+    const posterImage = createHtmlElement('img', ['moviePoster']);
+    posterImage.src = movie.Poster;
+    posterImage.alt = "Movie poster";
 
-        const posterImg = document.createElement("img");
-        posterImg.classList.add("moviePoster");
-        posterImg.src = movie.Poster;
-        posterImg.alt = "Movie Poster"
+    // Build the card structure
+    posterDiv.appendChild(posterImage);
+    cardArticle.appendChild(titleParagraph);
+    cardArticle.appendChild(posterDiv);
 
-        posterDiv.appendChild(posterImg);
-        card.appendChild(title);
-        card.appendChild(posterDiv);
-
-        movieCardsSection.appendChild(card);
-
-}
-
-function createEmptyView() {
-    const movieCardsSection= document.getElementById("movieCards");
-    movieCardsSection.innerHTML = ''; 
-
-    const noresult = document.createElement("div")
-    noresult.classList.add("noresult");
-    noresult.textContent = "No movies found. Please try another title."
-
-    movieCardsSection.appendChild(noresult);
+    // Append the complete card to the movieCards section
+    const movieCardsSection = document.getElementById("movieCards");
+    movieCardsSection.appendChild(cardArticle);
 }
